@@ -4,5 +4,6 @@
         "Mark Saffell",
         "Computer Refresh"
     ],
-    "hideAttachments": true
+    "hideAttachments": true,
+    "hideEmailChains": true
 }
