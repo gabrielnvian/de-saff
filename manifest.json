@@ -9,9 +9,12 @@
         "storage",
         "contextMenus"
     ],
+    "icons": {
+        "128": "icons/icon128.png"
+    },
     "options_page": "options.html",
     "host_permissions": [
-        "<all_urls>"
+        "https://helpspot.csusm.edu/*"
     ],
     "background": {
         "service_worker": "background.js"
@@ -22,11 +25,12 @@
                 "settings.json"
             ],
             "matches": [
-                "<all_urls>"
+                "https://helpspot.csusm.edu/*"
             ]
         }
     ],
     "action": {
-        "default_title": "De-Saff"
+        "default_title": "De-Saff",
+        "default_icon": "icons/icon128.png"
     }
 }
