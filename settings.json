@@ -1,4 +1,5 @@
 {
+    "runOnLoad": true,
     "onlyPrivate": false,
     "hideUsers": [
         "Mark Saffell",

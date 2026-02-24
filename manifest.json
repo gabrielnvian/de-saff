@@ -9,6 +9,17 @@
         "storage",
         "contextMenus"
     ],
+    "content_scripts": [
+        {
+            "matches": [
+                "https://helpspot.csusm.edu/*"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "run_at": "document_idle"
+        }
+    ],
     "icons": {
         "128": "icons/icon128.png"
     },

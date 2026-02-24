@@ -1,4 +1,24 @@
 (async () => {
+	await importSettings();
+
+	// Prevent duplicate runs in same tab execution
+	if (!window.simplifyHelpspotState) {
+		window.simplifyHelpspotState = {hidden: false};
+	}
+
+	const isManualClick = window.simplifyHelpspotState.manualTrigger === true;
+	if (!isManualClick && !window.deSaffSettings.runOnLoad) return;
+
+	// We use a helper function to wait for HelpSpot to actually render the notes
+	await waitForCards();
+
+	main();
+
+	// Flip toggle state
+	window.simplifyHelpspotState.hidden = !window.simplifyHelpspotState.hidden;
+})();
+
+async function importSettings() {
 	const data = await chrome.storage.local.get('deSaffSettings');
 
 	if (data.deSaffSettings) {
@@ -8,17 +28,26 @@
 		const response = await fetch(chrome.runtime.getURL('settings.json'));
 		window.deSaffSettings = await response.json();
 	}
+}
 
-	// Prevent duplicate runs in same tab execution
-	if (!window.simplifyHelpspotState) {
-		window.simplifyHelpspotState = {hidden: false};
-	}
-
-	main();
-
-	// Flip toggle state
-	window.simplifyHelpspotState.hidden = !window.simplifyHelpspotState.hidden;
-})();
+// Helper function to wait for HelpSpot notes to appear
+async function waitForCards() {
+	return new Promise((resolve) => {
+		let attempts = 0;
+		const check = setInterval(() => {
+			const cards = document.querySelectorAll("div.note-stream-item");
+			if (cards.length > 0) {
+				clearInterval(check);
+				resolve(true);
+			}
+			if (attempts > 10) { // Give up after 5 seconds (10 * 500ms)
+				clearInterval(check);
+				resolve(false);
+			}
+			attempts++;
+		}, 100);
+	});
+}
 
 function main() {
 	const cardsSelector = window.deSaffSettings.onlyPrivate

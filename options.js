@@ -1,5 +1,6 @@
 // Define the keys we expect to find in our HTML/JSON
 const SETTING_KEYS = [
+	'runOnLoad',
 	'onlyPrivate',
 	'hideAttachments',
 	'hideEmailChains',

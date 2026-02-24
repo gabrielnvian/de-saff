@@ -23,11 +23,22 @@ chrome.runtime.onInstalled.addListener(async () => {
 	}
 });
 
-// 2. Handle Extension Icon Click
+// 2. Handle Extension Icon Click (Toggle Logic)
 chrome.action.onClicked.addListener((tab) => {
+	// We first inject a small piece of code to set the manual trigger flag.
+	// This tells content.js that the user explicitly wants to flip the current state.
 	chrome.scripting.executeScript({
 		target: {tabId: tab.id},
-		files: ['content.js']
+		func: () => {
+			window.simplifyHelpspotState = window.simplifyHelpspotState || {hidden: false};
+			window.simplifyHelpspotState.manualTrigger = true;
+		}
+	}).then(() => {
+		// After setting the flag, we run the actual content script.
+		chrome.scripting.executeScript({
+			target: {tabId: tab.id},
+			files: ['content.js']
+		});
 	});
 });
 
