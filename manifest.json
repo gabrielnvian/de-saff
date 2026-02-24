@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "De-Saff",
     "version": "1.2.0",
-    "description": "Hides cards where header contains 'Mark Saffell'",
+    "description": "A better Helpspot experience",
     "permissions": [
         "activeTab",
         "scripting",
@@ -12,7 +12,7 @@
     "content_scripts": [
         {
             "matches": [
-                "https://helpspot.csusm.edu/*"
+                "https://helpspot.*"
             ],
             "js": [
                 "content.js"
@@ -25,7 +25,7 @@
     },
     "options_page": "options.html",
     "host_permissions": [
-        "https://helpspot.csusm.edu/*"
+        "https://helpspot.*"
     ],
     "background": {
         "service_worker": "background.js"
@@ -36,7 +36,7 @@
                 "settings.json"
             ],
             "matches": [
-                "https://helpspot.csusm.edu/*"
+                "https://helpspot.*"
             ]
         }
     ],
