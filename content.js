@@ -63,6 +63,7 @@ function hideElement(name, element, onClick) {
 	const showButton = document.createElement('a');
 	showButton.classList.add('de-saff-show');
 	showButton.classList.add('btn', 'inline-action', 'btn-request-private');
+	showButton.style.marginLeft = '5px';
 	showButton.style.marginBottom = '5px';
 	showButton.innerText = name;
 
