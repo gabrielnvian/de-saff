@@ -5,8 +5,11 @@
     "description": "Hides cards where header contains 'Mark Saffell'",
     "permissions": [
         "activeTab",
-        "scripting"
+        "scripting",
+        "storage",
+        "contextMenus"
     ],
+    "options_page": "options.html",
     "host_permissions": [
         "<all_urls>"
     ],
