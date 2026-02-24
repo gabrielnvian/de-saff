@@ -34,9 +34,9 @@ function main() {
 	}
 
 	for (const card of cards) {
-		const name = card.querySelector('.note-stream-item-name');
+		const name = card.querySelector('.note-stream-item-name').innerText;
 
-		if (!window.deSaffSettings.hideUsers.includes(name.innerText)) {
+		if (!window.deSaffSettings.hideUsers.includes(name)) {
 			if (window.deSaffSettings.hideEmailChains) {
 				hideEmailChain(card.querySelector('.note-stream-item-text'));
 			}
@@ -44,7 +44,7 @@ function main() {
 			continue;
 		}
 
-		hideElement("Show update", card.querySelector('.note-stream-item-text'));
+		hideElement("Show update by " + name, card.querySelector('.note-stream-item-body'));
 	}
 }
 
