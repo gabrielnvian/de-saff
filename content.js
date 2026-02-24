@@ -17,14 +17,13 @@
 function main() {
 	const cardsSelector = window.deSaffSettings.onlyPrivate
 		? "div.note-stream-item.note-stream-item-private"
-		: "div.note-stream-item"
+		: "div.note-stream-item";
 
 	const cards = document.querySelectorAll(cardsSelector)
 
 	// Show
 	if (window.simplifyHelpspotState.hidden) {
 		showAll();
-
 		return;
 	}
 
@@ -33,9 +32,18 @@ function main() {
 		hideAttachments();
 	}
 
-	for (const card of cards) {
-		const name = card.querySelector('.note-stream-item-name').innerText;
+	for (let i = 0; i < cards.length; i++) {
+		const card = cards[i];
+		const name = getCardName(card);
 
+		if (window.deSaffSettings.hideStatusUpdates) {
+			if (hideIfStatusUpdate(card)) {
+				// If this is a status update, we are done
+				continue;
+			}
+		}
+
+		// If it's a "Normal" user, just handle email chains and move on
 		if (!window.deSaffSettings.hideUsers.includes(name)) {
 			if (window.deSaffSettings.hideEmailChains) {
 				hideEmailChain(card.querySelector('.note-stream-item-text'));
@@ -44,8 +52,47 @@ function main() {
 			continue;
 		}
 
-		hideElement("Show update by " + name, card.querySelector('.note-stream-item-body'));
+		// If it's a "Hide" user, look for consecutive cards from the hide list
+		let group = [card];
+		let namesInGroup = new Set([name]);
+
+		while (i + 1 < cards.length) {
+			const nextCard = cards[i + 1];
+			const nextName = getCardName(nextCard);
+
+			if (window.deSaffSettings.hideUsers.includes(nextName)) {
+				group.push(nextCard);
+				namesInGroup.add(nextName);
+				i++; // Increment outer loop to skip these processed cards
+			} else {
+				break;
+			}
+		}
+
+		// Wrap and hide the group
+		handleCardGrouping(group, Array.from(namesInGroup));
 	}
+}
+
+function getCardName(card) {
+	return card.querySelector('.note-stream-item-name').innerText.trim();
+}
+
+function hideIfStatusUpdate(card) {
+	const internalUpdate = card.querySelector('.note-stream-item-logtext');
+
+	if (internalUpdate) {
+		internalUpdate
+			.parentElement
+			.parentElement
+			.parentElement
+			.parentElement
+			.remove();
+
+		return true;
+	}
+
+	return false;
 }
 
 function hideAttachments() {
@@ -54,6 +101,37 @@ function hideAttachments() {
 	for (const attachments of allAttachments) {
 		hideElement("Show attachments", attachments);
 	}
+}
+
+function handleCardGrouping(cards, names) {
+	if (cards.length === 0) return;
+
+	// Create a wrapper for the group
+	const groupWrapper = document.createElement('div');
+	groupWrapper.classList.add('de-saff-group-wrapper');
+
+	// Insert wrapper before the first card
+	const firstCard = cards[0];
+	firstCard.parentNode.insertBefore(groupWrapper, firstCard);
+
+	// Move all cards in the group into the wrapper
+	for (const card of cards) {
+		groupWrapper.appendChild(card);
+	}
+
+	const label = cards.length > 1
+		? `Show ${cards.length} updates from ${names.join(' & ')}`
+		: `Show update from ${names[0]}`;
+
+	// Hide the whole wrapper
+	hideElement(label, groupWrapper, (wrapper) => {
+		// Unwrap logic: put cards back where the wrapper was
+		const parent = wrapper.parentNode;
+		while (wrapper.firstChild) {
+			parent.insertBefore(wrapper.firstChild, wrapper);
+		}
+		wrapper.remove();
+	});
 }
 
 function hideElement(name, element, onClick) {
@@ -76,7 +154,8 @@ function hideElement(name, element, onClick) {
 		onClick?.(element);
 	}
 
-	element.parentElement.appendChild(showButton);
+	// Instead of appendChild, we place it exactly where the hidden element starts
+	element.insertAdjacentElement('beforebegin', showButton);
 }
 
 function showAll() {

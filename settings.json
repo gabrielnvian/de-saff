@@ -5,5 +5,6 @@
         "Computer Refresh"
     ],
     "hideAttachments": true,
-    "hideEmailChains": true
+    "hideEmailChains": true,
+    "hideStatusUpdates": true
 }
