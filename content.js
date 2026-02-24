@@ -87,18 +87,25 @@ function showAll() {
 }
 
 function hideEmailChain(cardElement) {
-	// 1. Target the specific "From:" div
-	const chainHeader = cardElement.querySelector('div[style*="border-color: rgb(181, 196, 223)"]');
+	// 1. Find all bold tags that contain "From:"
+	const bTags = cardElement.querySelectorAll('b');
+	let chainHeader = null;
 
-	// Safety check: Don't process if not found or if already wrapped
-	if (!chainHeader || chainHeader.parentElement.classList.contains('de-saff-wrapper')) return;
+	for (const b of bTags) {
+		if (b.innerText.trim().startsWith("From:")) {
+			// 2. The header is usually the parent div of this 'b' tag
+			// We look for the closest div that has a border or specific padding
+			chainHeader = b.closest('div[style*="border"]');
+			if (chainHeader) break;
+		}
+	}
 
-	// 2. Create the wrapper
+	// Safety check: Don't re-wrap if it's already in our wrapper
+	if (!chainHeader || chainHeader.closest('.de-saff-wrapper')) return;
+
+	// 3. The Wrapper Logic (Same as before)
 	const wrapper = document.createElement('div');
 	wrapper.classList.add('de-saff-wrapper');
-
-	// 3. Move the header and all subsequent siblings into the wrapper
-	// We insert the wrapper right before the header first
 	chainHeader.parentNode.insertBefore(wrapper, chainHeader);
 
 	let nextNode;
