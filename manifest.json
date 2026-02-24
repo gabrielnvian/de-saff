@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "De-Saff",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "Hides cards where header contains 'Mark Saffell'",
     "permissions": [
         "activeTab",
