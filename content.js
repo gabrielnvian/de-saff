@@ -216,3 +216,41 @@ function hideEmailChain(cardElement) {
 		wrapper.remove();
 	});
 }
+
+document.addEventListener('click', (event) => {
+	// 1. Check if the clicked element is the "Show All" button
+	// We check for the class 'btn accent' and the text 'Show All'
+	if (event.target.matches('a.btn.accent') && event.target.innerText === "Show All") {
+
+		console.log("De-Saff: 'Show All' clicked. Waiting for history to load...");
+
+		// 2. We need to wait for HelpSpot's AJAX to finish.
+		// Since we don't know exactly how long it takes, we poll for the removal
+		// of the loading message or a slight delay.
+		const checkLoad = setInterval(() => {
+			const loadingMsg = document.querySelector('#note-stream-load-more');
+
+			// If the loading message is gone or changed back from 'ajaxLoading',
+			// HelpSpot is likely done.
+			if (loadingMsg && !loadingMsg.innerHTML.includes('gif')) {
+				clearInterval(checkLoad);
+
+				// Extra 300ms cushion for HelpSpot's evalScripts() to finish
+				setTimeout(() => {
+					console.log("De-Saff: History loaded. Re-running main...");
+
+					main();
+					window.simplifyHelpspotState.hidden = !window.simplifyHelpspotState.hidden;
+
+					setTimeout(() => {
+						main();
+						window.simplifyHelpspotState.hidden = !window.simplifyHelpspotState.hidden;
+					}, 500)
+				}, 300);
+			}
+		}, 500);
+
+		// Safety timeout: stop looking after 10 seconds if it fails
+		setTimeout(() => clearInterval(checkLoad), 10000);
+	}
+}, true); // Use 'true' for the capture phase to catch it early
