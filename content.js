@@ -1,32 +1,76 @@
-// Prevent duplicate runs in same tab execution
-if (!window.simplifyHelpspotState) {
-  window.simplifyHelpspotState = { hidden: false };
+(async () => {
+	const dataUrl = chrome.runtime.getURL('settings.json');
+	const response = await fetch(dataUrl);
+	window.deSaffSettings = await response.json();
+
+	// Prevent duplicate runs in same tab execution
+	if (!window.simplifyHelpspotState) {
+		window.simplifyHelpspotState = {hidden: false};
+	}
+
+	main();
+})();
+
+function main() {
+	const cardsSelector = window.deSaffSettings.onlyPrivate
+		? "div.note-stream-item.note-stream-item-private"
+		: "div.note-stream-item"
+
+	const cards = document.querySelectorAll(cardsSelector)
+
+	if (window.simplifyHelpspotState.hidden) {
+		showAll();
+
+		window.simplifyHelpspotState.hidden = !window.simplifyHelpspotState.hidden;
+		return;
+	}
+
+	if (window.deSaffSettings.hideAttachments) {
+		hideAttachments();
+	}
+
+	for (const card of cards) {
+		const name = card.querySelector('.note-stream-item-name');
+
+		if (!window.deSaffSettings.hideUsers.includes(name.innerText)) continue;
+
+		hideElement("Show update", card.querySelector('.note-stream-item-text'));
+	}
+
+	// Flip toggle state
+	window.simplifyHelpspotState.hidden = !window.simplifyHelpspotState.hidden;
 }
 
-const cards = document.querySelectorAll(
-    "div.note-stream-item.card.smshadow.note-stream-item-private, div.note-stream-item.card.smshadow.note-stream-item-odd.note-stream-item-private"
-);
+function hideAttachments() {
+	const allAttachments = document.querySelectorAll('.note-stream-item-attachments');
 
-cards.forEach(card => {
-  const header = card.querySelector(".note-stream-item-header");
+	for (const attachments of allAttachments) {
+		hideElement("Show attachments", attachments);
+	}
+}
 
-  const shouldAffect =
-      card.textContent.includes("Request Changed:") ||
-      (header && header.textContent.includes("Mark Saffell"));
+function hideElement(name, element) {
+	element.dataset.originalDisplay = element.style.display;
+	element.style.display = "none";
 
-  if (shouldAffect) {
-    if (!window.simplifyHelpspotState.hidden) {
-      // Hide
-      card.dataset.originalDisplay = card.style.display;
-      card.style.display = "none";
-    } else {
-      // Show
-      card.style.display = card.dataset.originalDisplay || "";
-    }
-  }
-});
+	const showButton = document.createElement('a');
+	showButton.classList.add('de-saff-show');
+	showButton.innerText = name;
 
-// Flip toggle state
-window.simplifyHelpspotState.hidden = !window.simplifyHelpspotState.hidden;
+	showButton.onclick = e => {
+		e.preventDefault();
+		element.style.display = element.dataset.originalDisplay;
+		e.target.style.display = "none";
+		showButton.remove();
+	}
 
-console.log("Simplify Helpspot toggle state:", window.simplifyHelpspotState.hidden);
+	element.parentElement.appendChild(showButton);
+}
+
+function showAll() {
+	const showButtons = document.querySelectorAll('.de-saff-show');
+
+	for (const btn of showButtons) {
+		btn.click();
+	}
+}

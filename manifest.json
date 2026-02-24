@@ -1,19 +1,29 @@
 {
-  "manifest_version": 3,
-  "name": "de-saff",
-  "version": "1.0.1",
-  "description": "Hides cards where header contains 'Mark Saffell'",
-  "permissions": [
-    "activeTab",
-    "scripting"
-  ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
-  "background": {
-    "service_worker": "background.js"
-  },
-  "action": {
-    "default_title": "De-Saff"
-  }
+    "manifest_version": 3,
+    "name": "de-saff",
+    "version": "1.0.1",
+    "description": "Hides cards where header contains 'Mark Saffell'",
+    "permissions": [
+        "activeTab",
+        "scripting"
+    ],
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "settings.json"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ],
+    "action": {
+        "default_title": "De-Saff"
+    }
 }
