@@ -1,4 +1,10 @@
-# How to add a new settings entry
+# Getting started
+
+![extension-options](https://raw.githubusercontent.com/gabrielnvian/de-saff/refs/heads/master/docs/extension-options.png)
+
+# How to contribute
+
+## How to add a new settings entry
 
 ### Edit `options.html`:
 
@@ -24,7 +30,7 @@ Add a new entry in the `SETTING_KEYS` array
 window.deSaffSettings.newSettingName
 ```
 
-# Add new file
+## Add new file
 
 ### Add file path to `manifest.json`:
 
