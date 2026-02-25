@@ -173,11 +173,16 @@ function hideElement(name, element, onClick) {
 	element.dataset.originalDisplay = element.style.display;
 	element.style.display = "none";
 
-	const showButton = document.createElement('a');
+	const showButton = document.createElement('button');
 	showButton.classList.add('de-saff-show');
-	showButton.classList.add('btn', 'inline-action', 'btn-request-private');
-	showButton.style.marginLeft = '5px';
-	showButton.style.marginBottom = '5px';
+	showButton.classList.add('btn', 'inline-action');
+	if (window.deSaffSettings.cardStyleShowButtons) {
+		showButton.classList.add('note-stream-item', 'card');
+	} else {
+		showButton.style.marginTop = '-5px';
+		showButton.style.marginBottom = '15px';
+	}
+	showButton.style.marginRight = '10px';
 	showButton.innerText = name;
 
 	showButton.onclick = e => {

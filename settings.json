@@ -7,5 +7,6 @@
     ],
     "hideAttachments": true,
     "hideEmailChains": true,
-    "hideStatusUpdates": true
+    "hideStatusUpdates": true,
+    "cardStyleShowButtons": false
 }

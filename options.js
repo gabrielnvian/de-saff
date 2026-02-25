@@ -5,6 +5,7 @@ const SETTING_KEYS = [
 	'hideAttachments',
 	'hideEmailChains',
 	'hideStatusUpdates',
+	'cardStyleShowButtons',
 	'hideUsers'
 ];
 
