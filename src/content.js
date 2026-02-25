@@ -201,22 +201,28 @@ function wrapAndToggleGroup(cards, names) {
 }
 
 function wrapAndToggleEmailChain(cardElement) {
-	// 1. Find all bold tags that contain "From:"
-	const bTags = cardElement.querySelectorAll('b');
+	// 1. Grab all <hr> and <b> tags in the exact order they appear top-to-bottom
+	const potentialHeaders = cardElement.querySelectorAll('hr, b');
 	let chainHeader = null;
 
-	for (const b of bTags) {
-		if (b.innerText.trim().startsWith("From:")) {
-			// 2. The header is usually the parent div of this 'b' tag
-			chainHeader = b.closest('div[style*="border"]');
-			if (chainHeader) break;
+	for (const el of potentialHeaders) {
+		// Condition A: It's an <hr> tag
+		if (el.tagName === 'HR') {
+			chainHeader = el;
+			break;
+		}
+		// Condition B: It's a <b> tag containing "From:"
+		else if (el.tagName === 'B' && el.innerText.trim().startsWith("From:")) {
+			// Try to grab the border div, otherwise just start hiding from the B tag itself
+			chainHeader = el.closest('div[style*="border"]') || el;
+			break;
 		}
 	}
 
-	// Safety check: Don't re-wrap if it's already in our wrapper
+	// Safety check: Don't re-wrap if it's already in our wrapper or if we found nothing
 	if (!chainHeader || chainHeader.closest('.de-saff-processed')) return;
 
-	// 3. The Wrapper Logic
+	// 2. The Wrapper Logic
 	const wrapper = document.createElement('div');
 	wrapper.classList.add('de-saff-chain-wrapper');
 	chainHeader.parentNode.insertBefore(wrapper, chainHeader);
@@ -224,9 +230,10 @@ function wrapAndToggleEmailChain(cardElement) {
 	let nextNode;
 	let current = chainHeader;
 
+	// Move everything from the header to the bottom of the card into the wrapper
 	while (current) {
-		nextNode = current.nextSibling; // Save the next sibling before moving 'current'
-		wrapper.appendChild(current);   // Moving the node removes it from its old spot
+		nextNode = current.nextSibling;
+		wrapper.appendChild(current);
 		current = nextNode;
 	}
 
