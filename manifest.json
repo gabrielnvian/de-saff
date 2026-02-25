@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "De-Saff",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "A better Helpspot experience",
     "permissions": [
         "activeTab",
