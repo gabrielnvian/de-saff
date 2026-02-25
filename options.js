@@ -7,6 +7,7 @@ const SETTING_KEYS = [
 	'hideStatusUpdates',
 	'cardStyleShowButtons',
 	'fixDarkModeText',
+	'enableKeyboardNavigation',
 	'hideUsers'
 ];
 

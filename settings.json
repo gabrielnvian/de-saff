@@ -9,5 +9,6 @@
     "hideEmailChains": true,
     "hideStatusUpdates": true,
     "cardStyleShowButtons": false,
+    "enableKeyboardNavigation": true,
     "fixDarkModeText": true
 }

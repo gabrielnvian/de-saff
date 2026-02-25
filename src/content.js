@@ -6,6 +6,8 @@
 		window.simplifyHelpspotState = {hidden: false, manualTrigger: false};
 	}
 
+	initKeyboardNavigation();
+
 	const state = window.simplifyHelpspotState;
 	const isManualClick = state.manualTrigger === true;
 
