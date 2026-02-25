@@ -12,7 +12,7 @@
     "content_scripts": [
         {
             "matches": [
-                "https://helpspot.*"
+                "https://helpspot.csusm.edu/**"
             ],
             "js": [
                 "content.js"
@@ -25,7 +25,7 @@
     },
     "options_page": "options.html",
     "host_permissions": [
-        "https://helpspot.*"
+        "https://helpspot.csusm.edu/**"
     ],
     "background": {
         "service_worker": "background.js"
@@ -36,7 +36,7 @@
                 "settings.json"
             ],
             "matches": [
-                "https://helpspot.*"
+                "https://helpspot.csusm.edu/*"
             ]
         }
     ],
