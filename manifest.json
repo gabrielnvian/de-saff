@@ -17,6 +17,7 @@
             "js": [
                 "src/import-settings.js",
                 "src/wait-for-cards.js",
+                "src/fix-dark-mode.js",
                 "src/content.js",
                 "src/show-all-listener.js"
             ],

@@ -113,6 +113,8 @@ function injectToggles() {
 }
 
 function applyGlobalState() {
+	fixDarkMode();
+
 	const state = window.simplifyHelpspotState;
 	const allToggles = document.querySelectorAll('.de-saff-toggle');
 

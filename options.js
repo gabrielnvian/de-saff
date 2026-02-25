@@ -6,6 +6,7 @@ const SETTING_KEYS = [
 	'hideEmailChains',
 	'hideStatusUpdates',
 	'cardStyleShowButtons',
+	'fixDarkModeText',
 	'hideUsers'
 ];
 

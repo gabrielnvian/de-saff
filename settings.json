@@ -8,5 +8,6 @@
     "hideAttachments": true,
     "hideEmailChains": true,
     "hideStatusUpdates": true,
-    "cardStyleShowButtons": false
+    "cardStyleShowButtons": false,
+    "fixDarkModeText": true
 }
