@@ -15,7 +15,10 @@
                 "https://helpspot.csusm.edu/**"
             ],
             "js": [
-                "content.js"
+                "src/import-settings.js",
+                "src/wait-for-cards.js",
+                "src/content.js",
+                "src/show-all-listener.js"
             ],
             "run_at": "document_idle"
         }

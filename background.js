@@ -37,7 +37,7 @@ chrome.action.onClicked.addListener((tab) => {
 		// After setting the flag, we run the actual content script.
 		chrome.scripting.executeScript({
 			target: {tabId: tab.id},
-			files: ['content.js']
+			files: ['src/content.js']
 		});
 	});
 });
