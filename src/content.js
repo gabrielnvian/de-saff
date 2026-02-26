@@ -192,6 +192,8 @@ function wrapAndToggleGroup(cards, names) {
 	// Move all cards in the group into the wrapper
 	for (const card of cards) {
 		card.classList.add('de-saff-processed-card');
+		card.style.marginLeft = '20px';
+		card.style.marginRight = '-20px';
 		wrapper.appendChild(card);
 	}
 
