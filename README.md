@@ -1,39 +1,22 @@
-# Getting started
+# De-Saff
 
-![extension-options](https://raw.githubusercontent.com/gabrielnvian/de-saff/refs/heads/master/docs/extension-options.png)
+![logo](./icons/icon128.png)
 
-# How to contribute
+## Main features
 
-## How to add a new settings entry
+- Condense and hide an operator's updates if it becomes too much
+- Hide repeated email chains across updates
+- Hide attachments
+- Completely hide status updates (opened / closed / custom fields)
+- Fix Helpspot's dark mode: no more black text on a dark background
+- Move through tickets in a queue with CTRL + ArrowKeys
 
-### Edit `options.html`:
+## Contributing
 
-Add another entry:
+More info [here](./CONTRIBUTING.md)
 
-```html
+## Getting started
 
-<div class="setting-group">
-	<input id="newSettingName" type="checkbox">
-	<label for="newSettingName">Setting description</label>
-</div>
-```
+You can customize the behavior of the extension in the settings menu:
 
-### Edit `options.js`:
-
-Add a new entry in the `SETTING_KEYS` array
-
-### Optional - add default value in `settings.json`
-
-### Reference the setting in the code:
-
-```javascript
-window.deSaffSettings.newSettingName
-```
-
-## Add new file
-
-### Add file path to `manifest.json`:
-
-Important! The order of the files matter.
-They are loaded by the browser in that order, so if for example `content.js` depends on your new file, the new file will
-have to appear first in the list.
+![extension-options](./docs/extension-options.png)
