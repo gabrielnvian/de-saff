@@ -203,19 +203,15 @@ function wrapAndToggleGroup(cards, names) {
 }
 
 function wrapAndToggleEmailChain(cardElement) {
-	// 1. Grab all <hr> and <b> tags in the exact order they appear top-to-bottom
+	// 1. Grab all <hr> and <b> tags in the exact order they appear
 	const potentialHeaders = cardElement.querySelectorAll('hr, b');
 	let chainHeader = null;
 
 	for (const el of potentialHeaders) {
-		// Condition A: It's an <hr> tag
 		if (el.tagName === 'HR') {
 			chainHeader = el;
 			break;
-		}
-		// Condition B: It's a <b> tag containing "From:"
-		else if (el.tagName === 'B' && el.innerText.trim().startsWith("From:")) {
-			// Try to grab the border div, otherwise just start hiding from the B tag itself
+		} else if (el.tagName === 'B' && el.innerText.trim().startsWith("From:")) {
 			chainHeader = el.closest('div[style*="border"]') || el;
 			break;
 		}
@@ -224,19 +220,36 @@ function wrapAndToggleEmailChain(cardElement) {
 	// Safety check: Don't re-wrap if it's already in our wrapper or if we found nothing
 	if (!chainHeader || chainHeader.closest('.de-saff-processed')) return;
 
-	// 2. The Wrapper Logic
+	// Try to avoid hiding signatures:
+	if (chainHeader.previousElementSibling?.innerText?.includes('Best')) return;
+	if (chainHeader.nextElementSibling?.innerText?.includes(getCardName(cardElement))) return;
+
+	const textContainer = cardElement.querySelector('.note-stream-item-text') || cardElement;
+
+	// 2. Create the wrapper and insert it exactly where the chain header starts
 	const wrapper = document.createElement('div');
 	wrapper.classList.add('de-saff-chain-wrapper');
 	chainHeader.parentNode.insertBefore(wrapper, chainHeader);
 
-	let nextNode;
+	// 3. Move the chain header and all its direct siblings into the wrapper
 	let current = chainHeader;
-
-	// Move everything from the header to the bottom of the card into the wrapper
 	while (current) {
-		nextNode = current.nextSibling;
+		let next = current.nextSibling;
 		wrapper.appendChild(current);
-		current = nextNode;
+		current = next;
+	}
+
+	// 4. Walk up the DOM tree and vacuum up any remaining elements that come
+	// after this block, all the way up to the main text container
+	let parent = wrapper.parentNode;
+	while (parent && parent !== textContainer && parent !== cardElement) {
+		let parentSibling = parent.nextSibling;
+		while (parentSibling) {
+			let next = parentSibling.nextSibling;
+			wrapper.appendChild(parentSibling);
+			parentSibling = next;
+		}
+		parent = parent.parentNode;
 	}
 
 	createPermanentToggle(wrapper, "email chain", "inline");
