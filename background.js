@@ -1,21 +1,22 @@
-// 1. Initialization on Install
-chrome.runtime.onInstalled.addListener(async () => {
-	// Create the Right-Click Menu
-	chrome.contextMenus.create({
+// 1. MUST BE THE VERY FIRST LINE
+import './lib/browser-polyfill.min.js';
+
+// 2. Initialization on Install
+browser.runtime.onInstalled.addListener(async () => {
+	browser.contextMenus.create({
 		id: "open-settings",
 		title: "De-Saff Settings",
 		contexts: ["action"]
 	});
 
-	// Load defaults from bundled JSON into Storage
 	try {
-		const response = await fetch(chrome.runtime.getURL('settings.json'));
+		const url = browser.runtime.getURL('settings.json');
+		const response = await fetch(url);
 		const defaultSettings = await response.json();
 
-		// Check if settings already exist to avoid overwriting user changes on update
-		const data = await chrome.storage.local.get('deSaffSettings');
+		const data = await browser.storage.local.get('deSaffSettings');
 		if (!data.deSaffSettings) {
-			await chrome.storage.local.set({deSaffSettings: defaultSettings});
+			await browser.storage.local.set({deSaffSettings: defaultSettings});
 			console.log("De-Saff: Defaults initialized.");
 		}
 	} catch (err) {
@@ -23,28 +24,29 @@ chrome.runtime.onInstalled.addListener(async () => {
 	}
 });
 
-// 2. Handle Extension Icon Click (Toggle Logic)
-chrome.action.onClicked.addListener((tab) => {
-	// We first inject a small piece of code to set the manual trigger flag.
-	// This tells content.js that the user explicitly wants to flip the current state.
-	chrome.scripting.executeScript({
-		target: {tabId: tab.id},
-		func: () => {
-			window.simplifyHelpspotState = window.simplifyHelpspotState || {hidden: false};
-			window.simplifyHelpspotState.manualTrigger = true;
-		}
-	}).then(() => {
-		// After setting the flag, we run the actual content script.
-		chrome.scripting.executeScript({
+// 3. Handle Extension Icon Click
+browser.action.onClicked.addListener(async (tab) => {
+	try {
+		await browser.scripting.executeScript({
+			target: {tabId: tab.id},
+			func: () => {
+				window.simplifyHelpspotState = window.simplifyHelpspotState || {hidden: false};
+				window.simplifyHelpspotState.manualTrigger = true;
+			}
+		});
+
+		await browser.scripting.executeScript({
 			target: {tabId: tab.id},
 			files: ['src/content.js']
 		});
-	});
+	} catch (err) {
+		console.error("De-Saff: Script injection failed:", err);
+	}
 });
 
-// 3. Handle Context Menu Click
-chrome.contextMenus.onClicked.addListener((info) => {
+// 4. Handle Context Menu Click
+browser.contextMenus.onClicked.addListener((info) => {
 	if (info.menuItemId === "open-settings") {
-		chrome.runtime.openOptionsPage();
+		browser.runtime.openOptionsPage();
 	}
 });

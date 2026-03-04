@@ -12,9 +12,10 @@
     "content_scripts": [
         {
             "matches": [
-                "https://helpspot.csusm.edu/**"
+                "https://helpspot.csusm.edu/*"
             ],
             "js": [
+                "lib/browser-polyfill.min.js",
                 "src/import-settings.js",
                 "src/wait-for-cards.js",
                 "src/fix-dark-mode.js",
@@ -28,12 +29,21 @@
     "icons": {
         "128": "icons/icon128.png"
     },
-    "options_page": "options.html",
+    "options_ui": {
+        "page": "options.html",
+        "open_in_tab": true
+    },
     "host_permissions": [
-        "https://helpspot.csusm.edu/**"
+        "https://helpspot.csusm.edu/*"
     ],
     "background": {
-        "service_worker": "background.js"
+        "service_worker": "background.js",
+        "type": "module"
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "desaff@viancorp.local"
+        }
     },
     "web_accessible_resources": [
         {
