@@ -2,6 +2,8 @@
 
 ![logo](./icons/icon128.png)
 
+[Chrome Web Store](https://chromewebstore.google.com/detail/de-saff/fnbfllbnpiaimbdenhjoocphfeffbbcp)
+
 ## Main features
 
 - Condense and hide an operator's updates if it becomes too much
