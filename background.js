@@ -30,8 +30,8 @@ browser.action.onClicked.addListener(async (tab) => {
 		await browser.scripting.executeScript({
 			target: {tabId: tab.id},
 			func: () => {
-				window.simplifyHelpspotState = window.simplifyHelpspotState || {hidden: false};
-				window.simplifyHelpspotState.manualTrigger = true;
+				window.deSaffState = window.deSaffState || {hidden: false};
+				window.deSaffState.manualTrigger = true;
 			}
 		});
 

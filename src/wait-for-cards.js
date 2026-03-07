@@ -1,18 +1,24 @@
 // Helper function to wait for HelpSpot notes to appear
 async function waitForCards() {
 	return new Promise((resolve) => {
-		let attempts = 0;
-		const check = setInterval(() => {
-			const cards = document.querySelectorAll("div.note-stream-item");
-			if (cards.length > 0) {
-				clearInterval(check);
+		if (document.querySelector('div.note-stream-item')) {
+			resolve(true);
+			return;
+		}
+
+		const observer = new MutationObserver(() => {
+			if (document.querySelector('div.note-stream-item')) {
+				observer.disconnect();
 				resolve(true);
 			}
-			if (attempts > 10) { // Give up after 5 seconds (10 * 500ms)
-				clearInterval(check);
-				resolve(false);
-			}
-			attempts++;
-		}, 100);
+		});
+
+		observer.observe(document.body, {childList: true, subtree: true});
+
+		// Safety timeout: give up after 5 seconds
+		setTimeout(() => {
+			observer.disconnect();
+			resolve(false);
+		}, 5000);
 	});
 }

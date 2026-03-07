@@ -1,5 +1,7 @@
 function initKeyboardNavigation() {
 	if (!window.deSaffSettings.enableKeyboardNavigation) return;
+	if (window.deSaffKeyboardInitialized) return;
+	window.deSaffKeyboardInitialized = true;
 
 	window.addEventListener('keyup', function (e) {
 		if (!e.ctrlKey) return;

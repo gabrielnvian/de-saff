@@ -2,14 +2,14 @@
 	await importSettings();
 
 	// Prevent duplicate runs in same tab execution
-	if (!window.simplifyHelpspotState) {
-		window.simplifyHelpspotState = {hidden: false, manualTrigger: false};
+	if (!window.deSaffState) {
+		window.deSaffState = {hidden: false, manualTrigger: false};
 	}
 
 	initKeyboardNavigation();
 
-	const state = window.simplifyHelpspotState;
-	const isManualClick = state.manualTrigger === true;
+	const state = window.deSaffState;
+	const isManualClick = state.manualTrigger;
 
 	if (!isManualClick && !window.deSaffSettings.runOnLoad) return;
 
@@ -18,6 +18,7 @@
 
 	// Stage 1: Inject the permanent "Hide" buttons into the DOM
 	injectToggles();
+	fixDarkMode();
 
 	// Stage 2: Determine the new global state
 	if (isManualClick) {
@@ -50,15 +51,11 @@ function injectToggles() {
 
 	// --- PASS 1: ELIMINATE STATUS UPDATES ---
 	if (window.deSaffSettings.hideStatusUpdates) {
-		for (let i = 0; i < cards.length; i++) {
-			const card = cards[i];
-			if (card.classList.contains('de-saff-processed-card')) continue;
+		for (const card of cards) {
+			if (!card.querySelector('.note-stream-item-logtext')) continue;
 
-			const internalUpdate = card.querySelector('.note-stream-item-logtext');
-			if (internalUpdate) {
-				card.style.display = 'none';
-				card.classList.add('de-saff-processed-card');
-			}
+			card.style.display = 'none';
+			card.classList.add('de-saff-processed-card');
 		}
 	}
 
@@ -72,7 +69,7 @@ function injectToggles() {
 		const name = getCardName(card);
 
 		// A. Hidden Users (Grouping Logic)
-		if (window.deSaffSettings.hideUsers.includes(name)) {
+		if (window.deSaffSettings.hideUsers.has(name)) {
 			let group = [card];
 			let namesInGroup = new Set([name]);
 
@@ -90,7 +87,7 @@ function injectToggles() {
 
 				const nextName = getCardName(nextCard);
 
-				if (window.deSaffSettings.hideUsers.includes(nextName)) {
+				if (window.deSaffSettings.hideUsers.has(nextName)) {
 					group.push(nextCard);
 					namesInGroup.add(nextName);
 					lookAhead++; // Move forward and keep searching
@@ -115,37 +112,38 @@ function injectToggles() {
 }
 
 function applyGlobalState() {
-	fixDarkMode();
-
-	const state = window.simplifyHelpspotState;
+	const state = window.deSaffState;
 	const allToggles = document.querySelectorAll('.de-saff-toggle');
 
 	for (const btn of allToggles) {
 		const isCurrentlyHidden = btn.dataset.isTargetHidden === "true";
-
-		// If global state is HIDDEN, but button says SHOW, click it!
-		if (state.hidden && !isCurrentlyHidden) {
-			btn.click();
-		}
-		// If global state is SHOW, but button says HIDDEN, click it!
-		else if (!state.hidden && isCurrentlyHidden) {
-			btn.click();
+		if (state.hidden !== isCurrentlyHidden) {
+			btn._deSaffToggle(state.hidden);
 		}
 	}
 }
 
-function createPermanentToggle(targetElement, label, type) {
-	// Mark target as processed so we don't attach duplicate buttons
-	targetElement.classList.add('de-saff-processed');
+function setToggleHidden(btn, targetElement, label, hide) {
+	if (hide) {
+		targetElement.dataset.originalDisplay = targetElement.style.display;
+		targetElement.style.display = 'none';
+		btn.innerText = `Show ${label}`;
+		btn.dataset.isTargetHidden = "true";
+	} else {
+		targetElement.style.display = targetElement.dataset.originalDisplay;
+		btn.innerText = `Hide ${label}`;
+		btn.dataset.isTargetHidden = "false";
+	}
+}
 
-	// Setup the initial display state for toggling later
+function createPermanentToggle(targetElement, label, type) {
+	targetElement.classList.add('de-saff-processed');
 	targetElement.dataset.originalDisplay = targetElement.style.display || '';
 
 	const btn = document.createElement('button');
 	btn.classList.add('de-saff-toggle', 'btn', 'inline-action');
-	btn.dataset.isTargetHidden = "false"; // Starts visible
+	btn.dataset.isTargetHidden = "false";
 
-	// Dynamic Styling based on your original minimalist logic
 	if (type === 'card' && window.deSaffSettings.cardStyleShowButtons) {
 		btn.classList.add('note-stream-item', 'card');
 	} else {
@@ -156,26 +154,13 @@ function createPermanentToggle(targetElement, label, type) {
 
 	btn.innerText = `Hide ${label}`;
 
-	// Place it exactly where the hidden element starts
 	targetElement.insertAdjacentElement('beforebegin', btn);
 
-	// The Click Event
+	const toggle = (hide) => setToggleHidden(btn, targetElement, label, hide);
+	btn._deSaffToggle = toggle;
 	btn.onclick = e => {
 		e.preventDefault();
-		const isHidden = btn.dataset.isTargetHidden === "true";
-
-		if (isHidden) {
-			// Show it
-			targetElement.style.display = targetElement.dataset.originalDisplay;
-			btn.innerText = `Hide ${label}`;
-			btn.dataset.isTargetHidden = "false";
-		} else {
-			// Hide it
-			targetElement.dataset.originalDisplay = targetElement.style.display;
-			targetElement.style.display = 'none';
-			btn.innerText = `Show ${label}`;
-			btn.dataset.isTargetHidden = "true";
-		}
+		toggle(btn.dataset.isTargetHidden !== "true");
 	};
 }
 
